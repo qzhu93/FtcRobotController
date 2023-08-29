@@ -110,10 +110,14 @@ public class tryouts extends LinearOpMode {
             double denominator = Math.max(Math.abs(frontLeftPower),
                     Math.max(Math.abs(frontRightPower), Math.max(Math.abs(backLeftPower),
                     Math.max(Math.abs(backRightPower),1))));
-            frontLeftPower = frontLeftPower / denominator;
-            backLeftPower = backLeftPower / denominator;
-            frontRightPower = frontRightPower / denominator;
-            backRightPower = backRightPower / denominator;
+            while (((Math.abs(frontLeftPower)>1 || Math.abs(frontRightPower)>1) ||
+                    Math.abs(backLeftPower)>1) || Math.abs(backRightPower)>1);
+            {
+                frontLeftPower = frontLeftPower / denominator;
+                backLeftPower = backLeftPower / denominator;
+                frontRightPower = frontRightPower / denominator;
+                backRightPower = backRightPower / denominator;
+            }
 
             frontLeftMotor.setPower(frontLeftPower);
             backLeftMotor.setPower(backLeftPower);
