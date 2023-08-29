@@ -93,10 +93,10 @@ public class tryouts extends LinearOpMode {
                 imu.resetYaw();
             }
 
-
+            // field centric adjustment
             double botHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
-            double rotX = x * Math.cos(-botHeading) - y * Math.sin(-botHeading);
-            double rotY = x * Math.sin(-botHeading) + y * Math.cos(-botHeading);
+            double rotX = x*Math.cos(-botHeading) - y*Math.sin(-botHeading);
+            double rotY = x*Math.sin(-botHeading) + y*Math.cos(-botHeading);
 
             //calculate the power for four motor
             double frontLeftPower = (rotY + rotX + rx);
