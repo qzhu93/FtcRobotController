@@ -40,7 +40,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 
 @TeleOp(name="Basic: Linear OpMode", group="Linear Opmode")
-@Disabled
 public class tryouts extends LinearOpMode {
 
     // Declare OpMode members.
@@ -54,19 +53,17 @@ public class tryouts extends LinearOpMode {
 
         // Declare our motors
         // Make sure your ID's match your configuration
-        frontLeftMotor = hardwareMap.dcMotor.get("frontLeftMotor");
-        backLeftMotor = hardwareMap.dcMotor.get("backLeftMotor");
-        frontRightMotor = hardwareMap.dcMotor.get("frontRightMotor");
-        backRightMotor = hardwareMap.dcMotor.get("backRightMotor");
+        frontLeftMotor = hardwareMap.dcMotor.get("front_left_drive");
+        backLeftMotor = hardwareMap.dcMotor.get("rear_left_drive");
+        frontRightMotor = hardwareMap.dcMotor.get("front_right_drive");
+        backRightMotor = hardwareMap.dcMotor.get("rear_right_drive");
 
         // Reverse the right side motors. This may be wrong for your setup.
         // If your robot moves backwards when commanded to go forwards,
         // reverse the left side instead.
         // See the note about this earlier on this page.
-        frontLeftMotor.setDirection(DcMotor.Direction.FORWARD);
         backLeftMotor.setDirection(DcMotor.Direction.REVERSE);
-        frontRightMotor.setDirection(DcMotor.Direction.FORWARD);
-        backRightMotor.setDirection(DcMotor.Direction.REVERSE);
+        frontLeftMotor.setDirection(DcMotor.Direction.REVERSE);
 
         // Retrieve the IMU from the hardware map
         imu = hardwareMap.get(IMU.class, "imu");
@@ -81,10 +78,24 @@ public class tryouts extends LinearOpMode {
 
         if (isStopRequested()) return;
 
-        while (opModeIsActive()) {
+        while (opModeIsActive() && !isStopRequested()) {
             double y = -gamepad1.left_stick_y; // Remember, Y stick value is reversed
             double x = gamepad1.left_stick_x;
             double rx = gamepad1.right_stick_x;
+
+            //velocity control
+            double velocity_dec = gamepad1.left_trigger;
+            double velocity_inc = gamepad1.right_trigger;
+            double ControlVelocity = 1 - velocity_dec + velocity_inc;
+
+            //restrain the range of ControlVelocity into [0.5, 1]
+            if (ControlVelocity > 1) {
+                ControlVelocity = 1;
+            }
+            else if (ControlVelocity < 0.5){
+                ControlVelocity = 0.5;
+            }
+
 
             // This button choice was made so that it is hard to hit on accident,
             // it can be freely changed based on preference.
@@ -99,10 +110,10 @@ public class tryouts extends LinearOpMode {
             double rotY = x*Math.sin(-botHeading) + y*Math.cos(-botHeading);
 
             //calculate the power for four motor
-            double frontLeftPower = (rotY + rotX + rx);
-            double backLeftPower = (rotY - rotX + rx);
-            double frontRightPower = (rotY - rotX - rx);
-            double backRightPower = (rotY + rotX - rx);
+            double frontLeftPower = (rotY + rotX + rx)*ControlVelocity;
+            double backLeftPower = (rotY - rotX + rx)*ControlVelocity;
+            double frontRightPower = (rotY - rotX - rx)*ControlVelocity;
+            double backRightPower = (rotY + rotX - rx)*ControlVelocity;
 
             rotX = rotX * 1.1;  // Counteract imperfect strafing
 
@@ -110,14 +121,11 @@ public class tryouts extends LinearOpMode {
             double denominator = Math.max(Math.abs(frontLeftPower),
                     Math.max(Math.abs(frontRightPower), Math.max(Math.abs(backLeftPower),
                     Math.max(Math.abs(backRightPower),1))));
-            while (((Math.abs(frontLeftPower)>1 || Math.abs(frontRightPower)>1) ||
-                    Math.abs(backLeftPower)>1) || Math.abs(backRightPower)>1);
-            {
-                frontLeftPower = frontLeftPower / denominator;
-                backLeftPower = backLeftPower / denominator;
-                frontRightPower = frontRightPower / denominator;
-                backRightPower = backRightPower / denominator;
-            }
+            frontLeftPower = frontLeftPower / denominator;
+            backLeftPower = backLeftPower / denominator;
+            frontRightPower = frontRightPower / denominator;
+            backRightPower = backRightPower / denominator;
+
 
             frontLeftMotor.setPower(frontLeftPower);
             backLeftMotor.setPower(backLeftPower);
