@@ -30,7 +30,6 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -96,7 +95,6 @@ public class tryouts extends LinearOpMode {
                 ControlVelocity = 0.5;
             }
 
-
             // This button choice was made so that it is hard to hit on accident,
             // it can be freely changed based on preference.
             // The equivalent button is start on Xbox-style controllers.
@@ -121,10 +119,10 @@ public class tryouts extends LinearOpMode {
             double denominator = Math.max(Math.abs(frontLeftPower),
                     Math.max(Math.abs(frontRightPower), Math.max(Math.abs(backLeftPower),
                     Math.max(Math.abs(backRightPower),1))));
-            frontLeftPower = frontLeftPower / denominator;
-            backLeftPower = backLeftPower / denominator;
-            frontRightPower = frontRightPower / denominator;
-            backRightPower = backRightPower / denominator;
+            frontLeftPower /= denominator;
+            backLeftPower /= denominator;
+            frontRightPower /= denominator;
+            backRightPower /= denominator;
 
 
             frontLeftMotor.setPower(frontLeftPower);
